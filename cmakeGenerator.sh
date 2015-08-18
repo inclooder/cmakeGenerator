@@ -42,19 +42,15 @@ function main_prog(){
 	echo ""
 	read_project_name
 
-
 	create_directory "$project_name"
 	create_directory "$project_name/src"
 	create_directory "$project_name/include"
 	create_directory "$project_name/tests"
 	create_directory "$project_name/docs"
 	create_directory "$project_name/build"
-	create_file "$project_name/CMakeLists.txt"
-	create_file "$project_name/build.sh"
-	create_file "$project_name/src/main.cpp"
 	create_file "$project_name/readme.txt"
-	chmod +x "$project_name/build.sh"
 
+	create_file "$project_name/CMakeLists.txt"
 	cat <<-EOT >> "$project_name/CMakeLists.txt"
 	cmake_minimum_required(VERSION 2.8)
 	project($project_name)
@@ -65,6 +61,12 @@ function main_prog(){
 
 	EOT
 
+	create_file "$project_name/.gitignore"
+	cat <<-EOT >> "$project_name/.gitignore"
+	build/
+	EOT
+
+	create_file "$project_name/src/main.cpp"
 	cat <<-EOT >> "$project_name/src/main.cpp"
 	#include<iostream>
 
@@ -75,6 +77,7 @@ function main_prog(){
 	}
 	EOT
 
+	create_file "$project_name/build.sh"
 	cat <<-EOT >> "$project_name/build.sh"
 	#!/bin/bash
 	cd build
@@ -82,6 +85,7 @@ function main_prog(){
 	make
 	cd ..
 	EOT
+	chmod +x "$project_name/build.sh"
 
 	git_init
 
