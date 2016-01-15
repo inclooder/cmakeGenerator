@@ -44,7 +44,7 @@ function main_prog(){
 
 	create_directory "$project_name"
 	create_directory "$project_name/src"
-	create_directory "$project_name/include"
+	create_directory "$project_name/inc"
 	create_directory "$project_name/tests"
 	create_directory "$project_name/docs"
 	create_directory "$project_name/build"
@@ -55,7 +55,7 @@ function main_prog(){
 	cmake_minimum_required(VERSION 2.8)
 	project($project_name)
 
-	include_directories(\${${project_name}_SOURCE_DIR}/include)
+	include_directories(\${${project_name}_SOURCE_DIR}/inc)
 
 	add_executable($project_name src/main.cpp)
 
