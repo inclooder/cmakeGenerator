@@ -45,7 +45,7 @@ function main_prog(){
 	create_directory "$project_name"
 	create_directory "$project_name/src"
 	create_directory "$project_name/inc"
-	create_directory "$project_name/tests"
+	create_directory "$project_name/test"
 	create_directory "$project_name/docs"
 	create_directory "$project_name/build"
 	create_file "$project_name/readme.txt"
@@ -56,6 +56,7 @@ function main_prog(){
 	project($project_name)
 
 	include_directories(\${${project_name}_SOURCE_DIR}/inc)
+	add_subdirectory(test)
 
 	add_executable($project_name src/main.cpp)
 
@@ -68,7 +69,7 @@ function main_prog(){
 
 	create_file "$project_name/src/main.cpp"
 	cat <<-EOT >> "$project_name/src/main.cpp"
-	#include<iostream>
+	#include <iostream>
 
 	int main(){
 		std::cout << "Hello world" << std::endl;
@@ -77,15 +78,46 @@ function main_prog(){
 	}
 	EOT
 
-	create_file "$project_name/build.sh"
-	cat <<-EOT >> "$project_name/build.sh"
+	create_file "$project_name/build_all"
+	cat <<-EOT >> "$project_name/build_all"
 	#!/bin/bash
 	cd build
 	cmake ..
 	make
 	cd ..
 	EOT
-	chmod +x "$project_name/build.sh"
+
+	create_file "$project_name/test/test_sample.cpp"
+	cat <<-EOT >> "$project_name/test/test_sample.cpp"
+	#define BOOST_TEST_MAIN
+	#include <boost/test/included/unit_test.hpp>
+
+	BOOST_AUTO_TEST_CASE( test_case )
+	{
+		BOOST_CHECK( true );
+	}
+
+	EOT
+
+	create_file "$project_name/test/CMakeLists.txt"
+	cat <<-EOT >> "$project_name/test/CMakeLists.txt"
+	find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
+
+	set(SOURCES
+		test_sample.cpp
+	)
+
+	add_executable(test \${SOURCES})
+
+	target_link_libraries(
+		test
+		\${Boost_FILESYSTEM_LIBRARY}
+		\${Boost_SYSTEM_LIBRARY}
+		\${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+	)
+	EOT
+
+	chmod +x "$project_name/build_all"
 
 	git_init
 
